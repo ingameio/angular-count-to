@@ -8,19 +8,20 @@ var countTo = angular.module('countTo', [])
                 var e = element[0];
                 var num, refreshInterval, duration, steps, step, countTo, value, increment;
                 var numberFormat = $parse(attrs.numberFormat)(scope);
+                var numberFormatFractionSize = $parse(attrs.numberFormatFractionSize)(scope) || 0;
 
                 var calculate = function () {
                     refreshInterval = 30;
                     step = 0;
                     scope.timoutId = null;
-                    countTo = parseInt(attrs.countTo) || 0;
-                    scope.value = parseInt(attrs.value, 10) || 0;
+                    countTo = parseFloat(attrs.countTo) || 0;
+                    scope.value = parseFloat(attrs.value, 10) || 0;
                     duration = (parseFloat(attrs.duration) * 1000) || 0;
 
                     steps = Math.ceil(duration / refreshInterval);
                     increment = ((countTo - scope.value) / steps);
                     num = scope.value;
-                }
+                };
 
                 var tick = function () {
                     scope.timoutId = $timeout(function () {
@@ -30,12 +31,12 @@ var countTo = angular.module('countTo', [])
                             $timeout.cancel(scope.timoutId);
                             num = countTo;
                             if (numberFormat)
-                                countTo = numberFilter(countTo);
+                                countTo = numberFilter(countTo, numberFormatFractionSize);
                             e.textContent = countTo;
                         } else {
-                            roundedNum = Math.round(num);
+                            roundedNum = num;
                             if (numberFormat)
-                                roundedNum = numberFilter(roundedNum);
+                                roundedNum = numberFilter(num, numberFormatFractionSize);
                             e.textContent = roundedNum;
                             tick();
                         }
